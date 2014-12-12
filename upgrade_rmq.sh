@@ -27,7 +27,7 @@ function distro_check {
 }
 
 function check_rmq_version {
-    rmq_version=$(sudo rabbitmqctl status | grep "rabbit," | cut -d',' -f3 | cut -d'}' -f1)
+    rmq_version=$(sudo rabbitmqctl status | grep "rabbit," | cut -d',' -f3 | cut -d'}' -f1 | tr -d '"')
     newline && echo "    Version = $rmq_version" && newline
 }
 
