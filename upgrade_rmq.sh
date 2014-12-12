@@ -51,8 +51,8 @@ function upgrade_rmq_version {
     sudo yum install $file
     delay && newline
 
-    start_rmq
-    check_rmq_version
+    start_rmq && delay
+    check_rmq_version && delay
 }
 
 function start_rmq {
