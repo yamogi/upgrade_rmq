@@ -20,53 +20,53 @@
 #  - Remove delay and newline functions
 #     - Replace newlines with a simple "echo"
 #################################################
-function delay {
-    sleep 1
-}
 
-function newline {
-    echo ""
-}
-
-function distro_check {
-    distro=$(lsb_release -si)
-
-    if [ $distro == "CentOS" ]; then
-        check_rmq_version
-        upgrade_rmq_version
-    else
-        echo "Unsupported distro"
-        exit 1
-    fi
-}
+#function distro_check {
+#    distro=$(lsb_release -si)
+#
+#    if [ $distro == "CentOS" ]; then
+#        check_rmq_version
+#        upgrade_rmq_version
+#    else
+#        echo "Unsupported distro"
+#        exit 1
+#    fi
+#}
 
 function check_rmq_version {
     rmq_version=$(sudo rabbitmqctl status | grep "rabbit," | cut -d',' -f3 | cut -d'}' -f1 | tr -d '"')
-    newline && echo "    Version = $rmq_version" && newline
+    echo && echo "    Version = $rmq_version" && echo
+}
+
+function stop_rmq {
+    sudo service rabbitmq-server stop
+}
+
+function kill_erlang {
+    echo "Killing stray RMQ/erlang processes..."
+    pids=$(ps -fe | grep erlang | grep rabbitmq | awk '{ print $2 }')
+    echo $pids
 }
 
 function upgrade_rmq_version {
     echo "Changing directory to /tmp..."
     cd /tmp
-    delay && newline
+    echo
 
     echo "wgetting RabbitMQ .rpm file from official website..."
     url="http://www.rabbitmq.com/releases/rabbitmq-server/v3.4.2/rabbitmq-server-3.4.2-1.noarch.rpm"
     wget $url
-    delay && newline
+    echo
 
     echo "Validating signature..."
     url="http://www.rabbitmq.com/rabbitmq-signing-key-public.asc"
     sudo rpm --import $url
-    delay && newline
+    echo
 
     echo "Upgrading RabbitMQ version..."
     file="rabbitmq-server-3.4.2-1.noarch.rpm"
     sudo yum install $file
-    delay && newline
-
-    start_rmq && delay
-    check_rmq_version && delay
+    echo
 }
 
 function start_rmq {
@@ -74,7 +74,13 @@ function start_rmq {
 }
 
 function main {
-    distro_check
+    #distro_check        # Checking that the script is running on CentOS
+    check_rmq_version   # Checking the current version of RabbitMQ
+    stop_rmq            # Stopping the rabbitmq-server service
+    kill_erlang         # Killing erlang to ensure RMQ is stopped
+    upgrade_rmq_version # Upgrading RabbitMQ
+    start_rmq           # Starting the rabbitmq-server service
+    check_rmq_version   # Checking the current version of RabbitMQ
 }
 
 main
