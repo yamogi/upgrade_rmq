@@ -5,7 +5,21 @@
 #   Date:      2014.12.12
 #
 #################################################
-
+# To-Do List:
+#  - Remove/modify lsb_release function
+#    (distro_check) - the machine I ran this on
+#    did not have lsb_release installed.
+#  - Force stop of RabbitMQ (sudo service...)
+#    before running 'yum install' step
+#     - This should be a 'safe upgrade', and
+#       ensures RabbitMQ is not "stuck in limbo"
+#  - Kill stray RMQ processes before attempting
+#    to stop it
+#     - Especially the "erlang64" one - grep and
+#       awk for pid?
+#  - Remove delay and newline functions
+#     - Replace newlines with a simple "echo"
+#################################################
 function delay {
     sleep 1
 }
