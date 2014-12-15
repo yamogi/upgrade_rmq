@@ -39,13 +39,16 @@ function check_rmq_version {
 }
 
 function stop_rmq {
+    echo "Stopping RabbitMQ..."
     sudo service rabbitmq-server stop
 }
 
 function kill_erlang {
     echo "Killing stray RMQ/erlang processes..."
-    pids=$(ps -fe | grep erlang | grep rabbitmq | awk '{ print $2 }')
-    echo $pids
+    #pids=$(ps -fe | grep erlang | grep rabbitmq | awk '{ print $2 }')
+    #echo $pids
+    pgrep -u rabbitmq -x beam | xargs kill -9 || echo && echo "    RabbitMQ already stopped"
+    echo
 }
 
 function upgrade_rmq_version {
@@ -70,6 +73,7 @@ function upgrade_rmq_version {
 }
 
 function start_rmq {
+    echo "Starting RabbitMQ"
     sudo service rabbitmq-server start
 }
 
